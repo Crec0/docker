@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    server:
+        image: 1dev/server
+        container_name: onedev
+        restart: unless-stopped
+
+        volumes:
+            - ./data:/opt/onedev
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.onedev.rule: Host(`onedev.domain.com`)
+            traefik.http.routers.onedev.entrypoints: https
+            traefik.http.services.onedev.loadbalancer.server.port: 6610
+
+networks:
+    traefik:
+        external: true
+

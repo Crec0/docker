@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    portainer:
+        image: portainer/portainer-ce:latest
+        container_name: portainer
+        restart: unless-stopped
+
+        networks:
+            - traefik
+
+        volumes:
+            - ./data/portainer:/data
+            - /etc/localtime:/etc/localtime:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.portainer.rule: Host(`portainer.domain.com`)
+            traefik.http.routers.portainer.entrypoints: https
+            traefik.http.services.portainer.loadbalancer.server.port: 9000
+
+networks:
+    traefik:
+        external: true

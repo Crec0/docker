@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+    gossip:
+        build: ../git-sources/gossip/
+        container_name: gossip
+        restart: always
+
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.gossip.rule: Host(`gossip.domain.com`)
+            traefik.http.routers.gossip.entrypoints: https
+            traefik.http.services.gossip.loadbalancer.server.port: 10059
+
+networks:
+    traefik:
+        external: true

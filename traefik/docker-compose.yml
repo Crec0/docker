@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+    authelia:
+        image: authelia/authelia
+        container_name: authelia
+        restart: unless-stopped
+
+        networks:
+            - traefik
+        volumes:
+            - ./data/authelia/:/config/
+        env_file:
+            - .env
+        expose:
+            - 9091
+        labels:
+            traefik.enable: true
+            # HTTP
+            traefik.http.routers.authelia.entrypoints: https
+            traefik.http.routers.authelia.rule: Host(`auth.domain.com`)
+            traefik.http.services.authelia.loadbalancer.server.port: 9091
+            traefik.http.middlewares.authelia.forwardAuth.address: http://authelia:9091/api/verify?rd=https://auth.domain.com
+            traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: true
+            traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email
+    
+    traefik:
+        image: traefik:latest
+        container_name: traefik
+        restart: unless-stopped
+        command: --api.insecure=true --providers.docker
+        depends_on:
+            authelia:
+                condition: service_healthy
+
+        networks:
+            - traefik
+        
+        env_file:
+            - .env
+
+        expose:
+            - 8082
+
+        ports:
+            - 0.0.0.0:80:80
+            - 0.0.0.0:443:443
+
+        volumes:
+            - ./data/traefik/acme.json:/acme.json
+            - ./data/traefik/access.log:/access.log
+            - ./data/traefik/traefik.log:/traefik.log
+            - ./data/traefik/traefik.yml:/traefik.yml
+            - /var/run/docker.sock:/var/run/docker.sock
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.dashboard.rule: Host(`traefik.domain.com`)
+            traefik.http.routers.dashboard.entrypoints: https
+            traefik.http.routers.dashboard.service: api@internal
+            traefik.http.routers.dashboard.middlewares: authelia@docker
+            traefik.http.services.dashboard.loadbalancer.server.port: 8080
+
+
+networks:
+    traefik:
+        name: traefik
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.1.0.0/16

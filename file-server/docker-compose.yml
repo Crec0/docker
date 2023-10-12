@@ -1,0 +1,27 @@
+# version: '3'
+
+# services:
+#     files:
+#         image: machengim/oasis:latest
+#         container_name: files
+#         restart: always
+        
+#         networks:
+#             - traefik
+#             - minio
+        
+#         volumes:
+#             - ./public:/home/storage
+#             - ./data:/database/filebrowser.db
+
+#         labels:
+#             traefik.enable: true
+#             traefik.http.routers.files.rule: Host(`files.domain.com`)
+#             traefik.http.routers.files.entrypoints: https
+#             traefik.http.services.files.loadbalancer.server.port: 8000
+
+# networks:
+#     minio:
+#         external: true
+#     traefik:
+#         external: true

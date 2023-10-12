@@ -1,0 +1,34 @@
+{
+	log {
+		output file /var/log/access.log {
+			roll_size 1gb
+			roll_keep 5
+			roll_keep_for 720h
+			level DEBUG
+		}
+	}
+
+	servers {
+		log_credentials
+	}
+}
+
+*.YOUR_DOMAIN.TLD {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_DNS_TOKEN}
+	}
+
+	@panel host panel.YOUR_DOMAIN.TLD
+	handle @panel {
+		reverse_proxy panel:80
+	}
+
+	@wings host wings.YOUR_DOMAIN.TLD
+	handle @wings {
+		reverse_proxy wings:8080
+	}
+
+	handle {
+		abort
+	}
+}

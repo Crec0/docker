@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+    caddy:
+        build: .
+        container_name: caddy
+        restart: always
+
+        networks:
+            - caddy
+
+        ports:
+            - 0.0.0.0:80:80
+            - 0.0.0.0:443:443
+            - 0.0.0.0:2096:2096
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile
+            - ./logs/:/var/log/
+            - ./data:/data/caddy
+            - ./config:/config/caddy
+
+
+networks:
+    caddy:
+        name: caddy
+        ipam:
+            config:
+                - subnet: 10.1.1.0/24
+        driver_opts:
+            com.docker.network.bridge.name: caddy

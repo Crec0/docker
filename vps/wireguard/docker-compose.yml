@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    wireguard:
+        image: procustodibus/wireguard:latest
+        container_name: wireguard
+
+        sysctls:
+            - net.ipv4.ip_forward=1
+            - net.ipv4.conf.all.src_valid_mark=1
+
+        cap_add:
+            - NET_ADMIN
+
+        ports:
+            - 0.0.0.0:12000:51820/udp # Wireguard
+
+            # Http
+            - 0.0.0.0:443:443         # Https
+
+        volumes:
+            - ./data:/etc/wireguard
+
+    haproxy:
+        image: haproxy:alpine
+        container_name: haproxy
+        restart: unless-stopped
+        network_mode: service:wireguard
+
+        depends_on:
+            - wireguard
+
+        volumes:
+            - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+networks:
+    wireguard:
+        name: wireguard
+        ipam:
+            config:
+                - subnet: 10.5.0.0/24
+        driver_opts:
+            com.docker.network.bridge.name: wireguard

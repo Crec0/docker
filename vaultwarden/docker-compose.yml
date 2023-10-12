@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+    vaultwarden:
+        image: 'vaultwarden/server:latest'
+        container_name: vaultwarden
+        restart: unless-stopped
+        
+        volumes:
+            - /mnt/tank/docker/vaultwarden:/data
+
+        env_file:
+            - .env
+
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.vaultwarden.rule: Host(`vaultwarden.domain.com`)
+            traefik.http.routers.vaultwarden.entrypoints: https
+            traefik.http.services.vaultwarden.loadbalancer.server.port: 80
+
+networks:
+    traefik:
+        external: true
+

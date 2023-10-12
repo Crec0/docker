@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+    grafana:
+        image: grafana/grafana-oss
+        container_name: grafana
+        restart: unless-stopped
+
+        user: '1000:1000'
+
+        environment:
+            - GF_SERVER_ROOT_URL=https://grafana.domain.com
+
+        volumes:
+            - ./data/grafana:/var/lib/grafana
+
+        networks:
+            - traefik
+            - metrics
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.grafana.rule: Host(`grafana.domain.com`)
+            traefik.http.routers.grafana.entrypoints: https
+            traefik.http.services.grafana.loadbalancer.server.port: 3000
+
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        restart: unless-stopped
+
+        command: --config.file=/etc/prometheus/prometheus.yml --log.level=debug
+
+        networks:
+            - metrics
+
+        volumes:
+            - ./data/prometheus.yml:/etc/prometheus/prometheus.yml
+
+        expose:
+            - 9090
+
+    kasa-exporter:
+        build: ../git-sources/kasa-exporter/
+        container_name: kasa-exporter
+        restart: unless-stopped
+
+        networks:
+            - metrics
+
+        expose:
+            - 9089
+
+networks:
+    traefik:
+        external: true
+
+    metrics:
+        name: metrics
+

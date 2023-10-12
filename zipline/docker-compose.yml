@@ -1,0 +1,55 @@
+version: '3'
+services:
+    zipline-db:
+        image: postgres:15
+        container_name: zipline-db
+        restart: unless-stopped
+
+        env_file:
+            - .env
+
+        volumes:
+            - /mnt/tank/docker/zipline/postgres:/var/lib/postgresql/data
+
+        networks:
+            - zipline
+
+        healthcheck:
+            test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    zipline:
+        image: ghcr.io/diced/zipline
+        container_name: zipline
+        restart: unless-stopped
+
+        env_file:
+            - .env
+
+        volumes:
+            - /mnt/tank/docker/zipline/uploads:/zipline/uploads
+            - /mnt/tank/docker/zipline/public:/zipline/public
+
+        depends_on:
+            - zipline-db
+
+        networks:
+            - traefik
+            - minio
+            - zipline
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.zipline.rule: Host(`zipline.domain.com`)
+            traefik.http.routers.zipline.entrypoints: https
+            traefik.http.services.zipline.loadbalancer.server.port: 3000
+
+networks:
+    zipline:
+        name: zipline
+    minio:
+        external: true
+    traefik:
+        external: true
