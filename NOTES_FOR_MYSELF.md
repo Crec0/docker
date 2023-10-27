@@ -1,8 +1,10 @@
 # Notes for myself
 
-### Authelia Password hashing thing
+### Authelia
 
+#### Password hashing thing
 - `docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'PASSWORD_HERE'`
+- `docker exec -it authelia authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986`
 
 ### Pterodactyl
 
@@ -28,3 +30,7 @@ Peer info
 
 Otherwise you get weird spooky permission issues
 - `sudo chown -R 5050:5050 ./data/pgadmin`
+
+### Taskfile
+
+taskfile.dev

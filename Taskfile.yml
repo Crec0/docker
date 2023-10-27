@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+output: prefixed
+
+tasks:
+    all-down:
+        dir: ~/docker
+        cmds:
+            - for:
+                - dashboard
+                - gossip
+                - grafana
+                - infrared
+                - it-tools
+                - onedev
+                - portainer
+                - pterodactyl
+                - vaultwarden
+
+                # Depend on minio
+                - wings
+                - zipline
+
+                # Storage
+                - minio
+
+                # We do these last since everything else depends on them.
+                - traefik
+                - wireguard-client
+
+              task: toggle-stack
+              vars:
+                  CONTAINER: '{{.ITEM}}'
+                  DIRECTION: down
+
+    all-up:
+        dir: ~/docker
+        cmds:
+            - for:
+                # We do these first since everything else depends on them.
+                - wireguard-client
+                - traefik
+
+                # Storage
+                - minio
+
+                # Now can continue with the rest
+                - dashboard
+                - gossip
+                - grafana
+                - infrared
+                - it-tools
+                - onedev
+                - portainer
+                - vaultwarden
+                - zipline
+                - pterodactyl
+                - wings
+
+              task: toggle-stack
+              vars:
+                  CONTAINER: '{{.ITEM}}'
+                  DIRECTION: up -d
+
+
+    toggle-stack:
+        internal: true
+        prefix: '{{.CONTAINER}}'
+
+        dir: '{{.CONTAINER}}'
+        cmds: 
+            - docker compose {{ .DIRECTION }}
