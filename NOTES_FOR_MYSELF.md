@@ -34,3 +34,11 @@ Otherwise you get weird spooky permission issues
 ### Taskfile
 
 taskfile.dev
+
+### .gitattributes
+
+Put this in .git/config with YOUR_DOMAIN.COM being your domain to replace, for stuff.
+```diff 
++ [filter "yeet-domain"]
++	clean = sed s/YOUR_DOMAIN.COM/domain.com/ %f
+```
