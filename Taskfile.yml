@@ -26,6 +26,7 @@ tasks:
                 - minio
 
                 # We do these last since everything else depends on them.
+                - authelia
                 - traefik
                 - wireguard-client
 
@@ -41,6 +42,7 @@ tasks:
                 # We do these first since everything else depends on them.
                 - wireguard-client
                 - traefik
+                - authelia
 
                 # Storage
                 - minio
