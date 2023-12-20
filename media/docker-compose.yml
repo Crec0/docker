@@ -1,33 +1,185 @@
-# version: "3"
-# services:
-#     gluetun:
-#         image: qmcgaw/gluetun
-#         container_name: gluetun
+version: "3"
+services:
+    gluetun:
+        image: qmcgaw/gluetun
+        container_name: gluetun
 
-#         cap_add:
-#             - NET_ADMIN
+        networks:
+            - traefik
 
-#         devices:
-#             - /dev/net/tun:/dev/net/tun
+        cap_add:
+            - NET_ADMIN
 
-#         volumes:
-#             - ./data:/gluetun
+        devices:
+            - /dev/net/tun:/dev/net/tun
 
-#         env_file:
-#             - .env
+        env_file:
+            - .env
 
-#     radarr:
+        volumes:
+            - ./data/gluetun:/gluetun
 
-#     sonarr:
-    
-#     whisparr:
+        healthcheck:
+            interval: 5s
+            timeout: 5s
+            start_period: 10s
+            retries: 1
+            test: [ "CMD", "/gluetun-entrypoint", "healthcheck" ]
 
-#     prowlarr:
-
-#     qBitTorrent:
+        labels:
+            traefik.enable: true
+            traefik.http.routers.transmission.entrypoints: https
+            traefik.http.routers.transmission.rule: Host(`qbit.domain.com`)
+            traefik.http.routers.transmission.service: transmission
+            traefik.http.routers.transmission.middlewares: authelia@docker
+            traefik.http.services.transmission.loadbalancer.server.port: 9091
         
+            traefik.http.routers.radarr.entrypoints: https
+            traefik.http.routers.radarr.rule: Host(`radarr.domain.com`)
+            traefik.http.routers.radarr.service: radarr
+            traefik.http.routers.radarr.middlewares: authelia@docker
+            traefik.http.services.radarr.loadbalancer.server.port: 7878
+
+            traefik.http.routers.sonarr.entrypoints: https
+            traefik.http.routers.sonarr.rule: Host(`sonarr.domain.com`)
+            traefik.http.routers.sonarr.service: sonarr
+            traefik.http.routers.sonarr.middlewares: authelia@docker
+            traefik.http.services.sonarr.loadbalancer.server.port: 8989
+
+            traefik.http.routers.prowlarr.entrypoints: https
+            traefik.http.routers.prowlarr.rule: Host(`prowlarr.domain.com`)
+            traefik.http.routers.prowlarr.service: prowlarr
+            traefik.http.routers.prowlarr.middlewares: authelia@docker
+            traefik.http.services.prowlarr.loadbalancer.server.port: 9696
+
+    flaresolverr:
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        container_name: flaresolverr
+        restart: unless-stopped
+
+        network_mode: service:gluetun
+
+        environment:
+            - LOG_LEVEL=info
+
+    transmission:
+        image: lscr.io/linuxserver/transmission:latest
+        container_name: transmission
+        restart: unless-stopped
+
+        network_mode: service:gluetun
+
+        depends_on: 
+            gluetun:
+                condition: service_healthy
+
+            flaresolverr:
+                condition: service_started
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/transmission:/config
+            - /mnt/tank/transmission:/downloads
+
+    prowlarr:
+        image: ghcr.io/hotio/prowlarr:latest
+        container_name: prowlarr
+
+        network_mode: service:gluetun
+
+        depends_on: 
+            - transmission
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/prowlarr:/config
+
+        restart: unless-stopped
+
+    radarr:
+        image: ghcr.io/hotio/radarr:latest
+        container_name: radarr
+
+        network_mode: service:gluetun
+
+        depends_on: 
+            - prowlarr
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/radarr:/config
+            - /mnt/tank/movies:/media
+            - /mnt/tank/transmission:/downloads
+    
+    sonarr:
+        image: ghcr.io/hotio/sonarr:latest
+        container_name: sonarr
+
+        network_mode: service:gluetun
+
+        depends_on: 
+            - prowlarr
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/sonarr:/config
+            - /mnt/tank/tvshows:/media
+            - /mnt/tank/transmission:/downloads
+
+    jellyfin:
+        image: ghcr.io/hotio/jellyfin:latest
+        container_name: jellyfin
+
+        volumes:
+            - ./data/jellyfin:/config
+            - /mnt/tank/tvshows:/data/tvshows
+            - /mnt/tank/movies:/data/movies
+            # Devices
+            - /dev/dri/card0:/dev/dri/card0
+            - /dev/dri/renderD128:/dev/dri/renderD128
+
+        networks:
+            - traefik
+        
+        env_file:
+            - .env
+        
+        labels:
+            traefik.enable: true
+            traefik.http.routers.jellyfin.entrypoints: https
+            traefik.http.routers.jellyfin.rule: Host(`jellyfin.domain.com`)
+            traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+
+    jellyseerr:
+        image: ghcr.io/hotio/jellyseerr:latest
+        container_name: jellyseerr
+
+        volumes:
+            - ./data/jellyseerr:/config
+
+        networks:
+            - traefik
+        
+        env_file:
+            - .env
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.jellyseerr.entrypoints: https
+            traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.domain.com`)
+            traefik.http.services.jellyseerr.loadbalancer.server.port: 5055
 
 
-# networks:
-#     traefik:
-#         external: true
+networks:
+    media:
+        name: media
+    traefik:
+        external: true
