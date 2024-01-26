@@ -6,6 +6,9 @@
 - `docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'PASSWORD_HERE'`
 - `docker exec -it authelia authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986`
 
+#### Reloading config
+- `docker exec -it authelia authelia validate-config -c /config/configuration.yml`
+
 ### Pterodactyl
 
 Command to make panel user

@@ -16,7 +16,6 @@ tasks:
                 - onedev
                 - portainer
                 - pterodactyl
-                - vaultwarden
                 - wallos
                 - uptime-kuma
                 - media
@@ -57,7 +56,6 @@ tasks:
                 - it-tools
                 - onedev
                 - portainer
-                - vaultwarden
                 - media
                 - zipline
                 - pterodactyl
@@ -77,3 +75,7 @@ tasks:
         dir: '{{.CONTAINER}}'
         cmds: 
             - docker compose {{ .DIRECTION }}
+
+
+    reload-auth:
+        cmd: docker exec -it authelia authelia validate-config -c /config/configuration.yml

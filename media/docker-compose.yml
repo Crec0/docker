@@ -46,6 +46,12 @@ services:
             traefik.http.routers.sonarr.middlewares: authelia@docker
             traefik.http.services.sonarr.loadbalancer.server.port: 8989
 
+            traefik.http.routers.bazarr.entrypoints: https
+            traefik.http.routers.bazarr.rule: Host(`bazarr.domain.com`)
+            traefik.http.routers.bazarr.service: bazarr
+            traefik.http.routers.bazarr.middlewares: authelia@docker
+            traefik.http.services.bazarr.loadbalancer.server.port: 6767
+
             traefik.http.routers.prowlarr.entrypoints: https
             traefik.http.routers.prowlarr.rule: Host(`prowlarr.domain.com`)
             traefik.http.routers.prowlarr.service: prowlarr
@@ -81,7 +87,7 @@ services:
 
         volumes:
             - ./data/transmission:/config
-            - /mnt/tank/transmission:/downloads
+            - /mnt/tank/media/torrents:/media/torrents
 
     prowlarr:
         image: ghcr.io/hotio/prowlarr:latest
@@ -114,8 +120,7 @@ services:
 
         volumes:
             - ./data/radarr:/config
-            - /mnt/tank/movies:/media
-            - /mnt/tank/transmission:/downloads
+            - /mnt/tank/media:/media
     
     sonarr:
         image: ghcr.io/hotio/sonarr:latest
@@ -131,17 +136,33 @@ services:
 
         volumes:
             - ./data/sonarr:/config
-            - /mnt/tank/tvshows:/media
-            - /mnt/tank/transmission:/downloads
+            - /mnt/tank/media:/media
+
+    bazarr:
+        image: ghcr.io/hotio/bazarr:latest
+        container_name: bazarr
+
+        network_mode: service:gluetun
+
+        depends_on: 
+            - prowlarr
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/bazarr/config:/config
+            - /mnt/tank/media:/data
 
     jellyfin:
         image: ghcr.io/hotio/jellyfin:latest
         container_name: jellyfin
+        group_add:
+            - "105"
 
         volumes:
             - ./data/jellyfin:/config
-            - /mnt/tank/tvshows:/data/tvshows
-            - /mnt/tank/movies:/data/movies
+            - /mnt/tank/media/links:/media
             # Devices
             - /dev/dri/card0:/dev/dri/card0
             - /dev/dri/renderD128:/dev/dri/renderD128

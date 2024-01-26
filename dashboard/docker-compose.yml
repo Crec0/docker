@@ -12,13 +12,33 @@ services:
 
         networks:
             - traefik
-
+        
         labels:
             traefik.enable: true
             traefik.http.routers.dashdot.rule: Host(`dashdot.domain.com`)
             traefik.http.routers.dashdot.entrypoints: https
             traefik.http.routers.dashdot.middlewares: authelia@docker
             traefik.http.services.dashdot.loadbalancer.server.port: 3001
+
+    homarr:
+        container_name: homarr
+        image: ghcr.io/ajnart/homarr:latest
+        restart: unless-stopped
+        volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./data/configs:/app/data/configs
+        - ./data/icons:/app/public/icons
+        - ./data/stuff:/data
+
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.homarr.rule: Host(`homarr.domain.com`)
+            traefik.http.routers.homarr.entrypoints: https
+            traefik.http.routers.homarr.middlewares: authelia@docker
+            traefik.http.services.homarr.loadbalancer.server.port: 7575
 
 
 networks:
