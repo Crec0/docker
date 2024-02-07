@@ -8,17 +8,19 @@ tasks:
         dir: ~/docker
         cmds:
             - for:
+                - code-server
                 - dashboard
                 - gossip
                 - grafana
                 - infrared
                 - it-tools
+                - media
                 - onedev
                 - portainer
                 - pterodactyl
-                - wallos
                 - uptime-kuma
-                - media
+                - wallos
+
                 # Depend on minio
                 - wings
                 - zipline
@@ -41,27 +43,28 @@ tasks:
         cmds:
             - for:
                 # We do these first since everything else depends on them.
-                - wireguard-client
-                - traefik
                 - authelia
+                - traefik
+                - wireguard-client
 
                 # Storage
                 - minio
 
-                # Now can continue with the rest
+                - code-server
                 - dashboard
                 - gossip
                 - grafana
                 - infrared
                 - it-tools
+                - media
                 - onedev
                 - portainer
-                - media
-                - zipline
                 - pterodactyl
-                - wings
-                - wallos
                 - uptime-kuma
+                - wallos
+                - wings
+                - zipline
+
               task: toggle-stack
               vars:
                   CONTAINER: '{{.ITEM}}'
