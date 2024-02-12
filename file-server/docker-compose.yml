@@ -1,27 +1,24 @@
-# version: '3'
+version: '3.8'
 
-# services:
-#     files:
-#         image: machengim/oasis:latest
-#         container_name: files
-#         restart: always
-        
-#         networks:
-#             - traefik
-#             - minio
-        
-#         volumes:
-#             - ./public:/home/storage
-#             - ./data:/database/filebrowser.db
+services:
+    share:
+        image: caddy:latest
+        restart: unless-stopped
+        container_name: caddy-file-stash
 
-#         labels:
-#             traefik.enable: true
-#             traefik.http.routers.files.rule: Host(`files.domain.com`)
-#             traefik.http.routers.files.entrypoints: https
-#             traefik.http.services.files.loadbalancer.server.port: 8000
+        volumes:
+            - ./data/filez:/filez
+            - ./Caddyfile:/etc/caddy/Caddyfile
 
-# networks:
-#     minio:
-#         external: true
-#     traefik:
-#         external: true
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.files.rule: Host(`share.domain.com`)
+            traefik.http.routers.files.entrypoints: https
+            traefik.http.services.files.loadbalancer.server.port: 80
+
+networks:
+    traefik:
+        external: true

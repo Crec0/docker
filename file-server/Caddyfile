@@ -1,0 +1,6 @@
+:80 {
+    handle {
+        root * /filez
+        file_server browse
+    }
+}
