@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+    bluemap:
+        image: ghcr.io/bluemap-minecraft/bluemap:latest
+        container_name: bluemap
+        restart: always
+        command: -r -u -w
+
+        volumes:
+            - /mnt/tank/docker/wings/volumes/<UUID>/world:/app/world
+            - ./data/config:/app/config
+            - ./data/persistent:/app/data
+            - ./data/web:/app/web
+        
+        networks:
+            - traefik
+
+        labels:
+            traefik.enable: true
+            traefik.http.routers.bluemap.rule: Host(`bluemap.domain.com`)
+            traefik.http.routers.bluemap.entrypoints: https
+            traefik.http.routers.bluemap.middlewares: authelia@docker
+            traefik.http.services.bluemap.loadbalancer.server.port: 8100
+
+
+networks:
+    traefik:
+        external: true
