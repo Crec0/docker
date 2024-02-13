@@ -13,6 +13,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.uptime.rule: Host(`uptime.domain.com`)
             traefik.http.routers.uptime.entrypoints: https

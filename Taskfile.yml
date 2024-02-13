@@ -85,3 +85,7 @@ tasks:
 
     generate-secret:
         cmd: docker exec -it authelia authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986
+
+    update-stack:
+        dir: '{{ .USER_WORKING_DIR }}'
+        cmd: docker compose pull && docker compose down && docker compose up -d

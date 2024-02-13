@@ -1,0 +1,29 @@
+version: '3'
+services:
+    SERVICE:
+        image: IMG
+        container_name: SERVICE
+        restart: unless-stopped
+
+        env_file:
+            - .env
+
+        volumes:
+            - PATH
+
+        networks:
+            - traefik
+            - SERVICE
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.SERVICE.rule: Host(`SERVICE.domain.com`)
+            traefik.http.routers.SERVICE.entrypoints: https
+            traefik.http.services.SERVICE.loadbalancer.server.port: 3000
+
+networks:
+    SERVICE:
+        name: SERVICE
+    traefik:
+        external: true

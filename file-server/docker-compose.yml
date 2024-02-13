@@ -14,6 +14,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.files.rule: Host(`share.domain.com`)
             traefik.http.routers.files.entrypoints: https

@@ -14,6 +14,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.onedev.rule: Host(`onedev.domain.com`)
             traefik.http.routers.onedev.entrypoints: https

@@ -15,6 +15,7 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock:ro
         
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.portainer.rule: Host(`portainer.domain.com`)
             traefik.http.routers.portainer.entrypoints: https

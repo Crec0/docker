@@ -27,6 +27,7 @@ services:
             test: [ "CMD", "/gluetun-entrypoint", "healthcheck" ]
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.transmission.entrypoints: https
             traefik.http.routers.transmission.rule: Host(`qbit.domain.com`)
@@ -68,6 +69,9 @@ services:
         environment:
             - LOG_LEVEL=info
 
+        labels:
+            diun.enable: true
+
     transmission:
         image: lscr.io/linuxserver/transmission:latest
         container_name: transmission
@@ -89,6 +93,9 @@ services:
             - ./data/transmission:/config
             - /mnt/tank/media/torrents:/media/torrents
 
+        labels:
+            diun.enable: true
+
     prowlarr:
         image: ghcr.io/hotio/prowlarr:latest
         container_name: prowlarr
@@ -106,6 +113,9 @@ services:
 
         restart: unless-stopped
 
+        labels:
+            diun.enable: true
+
     radarr:
         image: ghcr.io/hotio/radarr:latest
         container_name: radarr
@@ -122,6 +132,9 @@ services:
             - ./data/radarr:/config
             - /mnt/tank/media:/media
     
+        labels:
+            diun.enable: true
+
     sonarr:
         image: ghcr.io/hotio/sonarr:latest
         container_name: sonarr
@@ -138,6 +151,9 @@ services:
             - ./data/sonarr:/config
             - /mnt/tank/media:/media
 
+        labels:
+            diun.enable: true
+
     bazarr:
         image: ghcr.io/hotio/bazarr:latest
         container_name: bazarr
@@ -153,6 +169,9 @@ services:
         volumes:
             - ./data/bazarr/config:/config
             - /mnt/tank/media:/data
+
+        labels:
+            diun.enable: true
 
     jellyfin:
         image: ghcr.io/hotio/jellyfin:latest
@@ -173,7 +192,9 @@ services:
         env_file:
             - .env
         
+
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.jellyfin.entrypoints: https
             traefik.http.routers.jellyfin.rule: Host(`jellyfin.domain.com`)
@@ -192,7 +213,9 @@ services:
         env_file:
             - .env
 
+
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.jellyseerr.entrypoints: https
             traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.domain.com`)

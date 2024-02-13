@@ -10,6 +10,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.it-tools.rule: Host(`it-tools.domain.com`)
             traefik.http.routers.it-tools.entrypoints: https

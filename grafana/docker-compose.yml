@@ -19,6 +19,7 @@ services:
             - metrics
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.grafana.rule: Host(`grafana.domain.com`)
             traefik.http.routers.grafana.entrypoints: https
@@ -41,6 +42,8 @@ services:
         expose:
             - 8080
 
+        labels:
+            diun.enable: true
 
     prometheus:
         image: prom/prometheus
@@ -60,6 +63,9 @@ services:
         expose:
             - 9090
 
+        labels:
+            diun.enable: true
+
 
     node_exporter:
         image: quay.io/prometheus/node-exporter:latest
@@ -71,6 +77,9 @@ services:
         restart: unless-stopped
         volumes:
             - '/:/host:ro,rslave'
+
+        labels:
+            diun.enable: true
 
     kasa-exporter:
         build: ../git-sources/kasa-exporter/

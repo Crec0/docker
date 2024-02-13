@@ -14,6 +14,7 @@ services:
             - traefik
         
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.dashdot.rule: Host(`dashdot.domain.com`)
             traefik.http.routers.dashdot.entrypoints: https
@@ -34,6 +35,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.homarr.rule: Host(`homarr.domain.com`)
             traefik.http.routers.homarr.entrypoints: https

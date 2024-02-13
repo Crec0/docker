@@ -1,27 +1,28 @@
 version: '3.0'
 
 services:
-  stirling-pdf:
-    container_name: stirling-pdf 
-    image: frooodle/s-pdf:latest
-    restart: unless-stopped
+    stirling-pdf:
+        container_name: stirling-pdf 
+        image: frooodle/s-pdf:latest
+        restart: unless-stopped
 
-    environment:
-        TZ: 'America/Vancouver'
-        DOCKER_ENABLE_SECURITY: false
+        environment:
+            TZ: 'America/Vancouver'
+            DOCKER_ENABLE_SECURITY: false
 
-    volumes:
-        - './training:/usr/share/tessdata'
-        - './configs:/configs'
+        volumes:
+            - './training:/usr/share/tessdata'
+            - './configs:/configs'
 
-    networks:
-        - traefik
+        networks:
+            - traefik
     
-    labels:
-        traefik.enable: true
-        traefik.http.routers.stirling-pdf.rule: Host(`pdf.domain.com`)
-        traefik.http.routers.stirling-pdf.entrypoints: https
-        traefik.http.services.stirling-pdf.loadbalancer.server.port: 8080
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.stirling-pdf.rule: Host(`pdf.domain.com`)
+            traefik.http.routers.stirling-pdf.entrypoints: https
+            traefik.http.services.stirling-pdf.loadbalancer.server.port: 8080
 
 networks:
     traefik:

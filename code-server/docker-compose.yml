@@ -18,6 +18,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.code.rule: Host(`code.domain.com`)
             traefik.http.routers.code.entrypoints: https

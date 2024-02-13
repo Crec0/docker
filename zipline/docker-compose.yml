@@ -33,7 +33,8 @@ services:
             - /mnt/tank/docker/zipline/public:/zipline/public
 
         depends_on:
-            - zipline-db
+            zipline-db:
+                condition: service_healthy
 
         networks:
             - traefik
@@ -41,6 +42,7 @@ services:
             - zipline
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.zipline.rule: Host(`zipline.domain.com`)
             traefik.http.routers.zipline.entrypoints: https

@@ -10,6 +10,7 @@ services:
             - traefik
 
         labels:
+            diun.enable: true
             traefik.enable: true
             traefik.http.routers.gossip.rule: Host(`gossip.domain.com`)
             traefik.http.routers.gossip.entrypoints: https
