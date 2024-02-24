@@ -88,4 +88,4 @@ tasks:
 
     update-stack:
         dir: '{{ .USER_WORKING_DIR }}'
-        cmd: docker compose pull && docker compose down && docker compose up -d
+        cmd: docker compose pull && docker compose up -d

@@ -1,0 +1,23 @@
+version: '3'
+services:
+    memos:
+        image: neosmemo/memos:stable
+        container_name: memos
+        restart: unless-stopped
+
+        volumes:
+            - ./data:/var/opt/memos
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.memos.rule: Host(`memos.domain.com`)
+            traefik.http.routers.memos.entrypoints: https
+            traefik.http.services.memos.loadbalancer.server.port: 5230
+
+networks:
+    traefik:
+        external: true

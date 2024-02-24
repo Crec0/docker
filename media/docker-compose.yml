@@ -213,7 +213,6 @@ services:
         env_file:
             - .env
 
-
         labels:
             diun.enable: true
             traefik.enable: true

@@ -1,0 +1,23 @@
+version: '3'
+services:
+    gate:
+        image: ghcr.io/minekube/gate:latest
+        container_name: gate
+        command: /gate --config /config/config.yml
+        restart: unless-stopped
+
+        volumes:
+            - ./config:/config
+
+        ports:
+            - 0.0.0.0:20000:20000/tcp
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+
+networks:
+    traefik:
+        external: true
