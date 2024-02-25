@@ -1,0 +1,28 @@
+version: '3'
+services:
+    dozzle:
+        image: amir20/dozzle:latest
+        container_name: dozzle
+        restart: unless-stopped
+
+        environment:
+            DOZZLE_NO_ANALYTICS: true
+            DOZZLE_AUTH_PROVIDER: forward-proxy
+
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.dozzle.rule: Host(`dozzle.domain.com`)
+            traefik.http.routers.dozzle.entrypoints: https
+            traefik.http.services.dozzle.loadbalancer.server.port: 8080
+            traefik.http.routers.dozzle.middlewares: authelia@docker
+
+networks:
+    traefik:
+        external: true
