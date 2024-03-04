@@ -6,9 +6,12 @@ services:
         container_name: homepage
         restart: unless-stopped
 
+        command: sh -c "sed -i -e 's/!data\.find\(el => \(el\.fs === fs && el\.type === fsType\)\)/true/' node_modules/systeminformation/lib/filesystem.js && node server.js"
+
         volumes:
             - /:/mnt/root:ro
             - /var/run/docker.sock:/var/run/docker.sock
+            - ./data/images:/app/public/images
             - ./data/configs:/app/config
 
         networks:
