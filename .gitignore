@@ -4,3 +4,4 @@
 **/config.*
 git-sources/
 .task/
+server-state.txt

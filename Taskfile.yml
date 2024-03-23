@@ -3,90 +3,57 @@ version: "3"
 
 output: prefixed
 
+vars:
+    SERVER_STATE_STORAGE: '{{.TASKFILE_DIR}}/server-state.txt'
+
+    STARTUP_ORDER:
+        sh: cat {{.TASKFILE_DIR}}/stack-order.txt
+
+    SHUTDOWN_ORDER:
+        sh: cat {{.TASKFILE_DIR}}/stack-order.txt | tac
+
+    PANEL_IP:
+        sh: docker inspect panel | jq -r '.[0].NetworkSettings.Networks.traefik.IPAddress'
+
+    PANEL_APP_KEY:
+        sh: cat {{.TASKFILE_DIR}}/pterodactyl/.env | grep 'PTERO_API_KEY' | sed -E 's/\w+=//'
+
+    PANEL_CLIENT_API_KEY:
+        sh: cat {{.TASKFILE_DIR}}/pterodactyl/.env | grep 'PTERO_CLIENT_API_KEY' | sed -E 's/\w+=//'
+
+    APP_HEADERS: "-H 'Accept: application/json' -H 'Authorization: Bearer {{.PANEL_APP_KEY}}'"
+    CLIENT_HEADERS: "-H 'Accept: application/json' -H 'Authorization: Bearer {{.PANEL_CLIENT_API_KEY}}'"
+
+
 tasks:
     all-down:
         dir: ~/docker
         cmds:
             - for:
-                - code-server
-                - dashboard
-                - dozzle
-                - diun
-                - gossip
-                - grafana
-                - gate 
-                - it-tools
-                - media
-                - memos
-                - onedev
-                - paperless-ngx
-                - pdf
-                - portainer
-                - pterodactyl
-                - uptime-kuma
-                - wallos
-
-                # Depend on minio
-                - zipline
-
-                # Storage
-                - minio
-
-                # We do these last since everything else depends on them.
-                - authelia
-                - traefik
-                - wireguard-client
-
+                  var: SHUTDOWN_ORDER
               task: toggle-stack
               vars:
-                  CONTAINER: '{{.ITEM}}'
+                  STACK: "{{.ITEM}}"
                   DIRECTION: down
 
     all-up:
         dir: ~/docker
         cmds:
             - for:
-                # We do these first since everything else depends on them.
-                - traefik
-                - authelia
-                - wireguard-client
-
-                # Storage
-                - minio
-
-                - code-server
-                - dashboard
-                - diun
-                - dozzle
-                - gossip
-                - grafana
-                - gate
-                - it-tools
-                - media
-                - memos
-                - onedev
-                - paperless-ngx
-                - pdf
-                - portainer
-                - pterodactyl
-                - uptime-kuma
-                - wallos
-                - zipline
-
+                  var: STARTUP_ORDER
               task: toggle-stack
               vars:
-                  CONTAINER: '{{.ITEM}}'
+                  STACK: "{{.ITEM}}"
                   DIRECTION: up -d
-
 
     toggle-stack:
         internal: true
-        prefix: '{{.CONTAINER}}'
+        prefix: "{{.STACK}}"
 
-        dir: '{{.CONTAINER}}'
-        cmds: 
-            - docker compose {{ .DIRECTION }}
-
+        dir: "{{.STACK}}"
+        cmds:
+            - cmd: docker compose {{.DIRECTION}}
+              ignore_error: true
 
     validate-auth:
         cmd: docker exec -it authelia authelia validate-config -c /config/configuration.yml
@@ -95,5 +62,52 @@ tasks:
         cmd: docker exec -it authelia authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986
 
     update-stack:
-        dir: '{{ .USER_WORKING_DIR }}'
+        dir: "{{.USER_WORKING_DIR}}"
         cmd: docker compose pull && docker compose up -d
+
+    panel-save-shutdown:
+        vars:
+            SERVERS_IDS:
+                sh: curl -s -X GET {{.APP_HEADERS}} http://{{.PANEL_IP}}/api/application/servers | jq -r '.data[].attributes.identifier'
+
+        preconditions:
+            - echo {{.PANEL_IP}} | grep -q ^10.1.0.
+
+        cmds:
+            - echo -n > {{.SERVER_STATE_STORAGE}}
+            - for:
+                  var: SERVERS_IDS
+              task: save-server-states
+              vars:
+                  SERVER_ID: "{{.ITEM}}"
+
+    save-server-states:
+        internal: true
+        vars:
+            STATE:
+                sh: curl -s -X GET {{.CLIENT_HEADERS}} http://{{.PANEL_IP}}/api/client/servers/{{.SERVER_ID}}/resources | jq -r '.attributes.current_state'
+
+        cmds: 
+            - echo {{.SERVER_ID}}-{{if or (eq .STATE "running") (eq .STATE "starting")}}start{{else}}stop{{end}} >> {{.SERVER_STATE_STORAGE}}
+            - curl -s -X POST {{.CLIENT_HEADERS}} -d 'signal=stop' http://{{.PANEL_IP}}/api/client/servers/{{.SERVER_ID}}/power
+
+    panel-restore:
+        vars:
+            SERVER_STATES:
+                sh: cat {{.SERVER_STATE_STORAGE}}
+
+        preconditions:
+            - echo {{.PANEL_IP}} | grep -q ^10.1.0.
+
+        cmds:
+            - for:
+                  var: SERVER_STATES
+              task: restore-server-states
+              vars:
+                  STATE: "{{.ITEM}}"
+    
+    restore-server-states:
+        internal: true
+        cmd: |
+            {{$thing := splitList "-" .STATE}}
+            curl -s -X POST {{.CLIENT_HEADERS}} -d 'signal={{index $thing 1}}' http://{{.PANEL_IP}}/api/client/servers/{{index $thing 0}}/power
