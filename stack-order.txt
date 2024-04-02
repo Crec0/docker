@@ -17,6 +17,7 @@ paperless-ngx
 pdf
 portainer
 pterodactyl
+sailboat
 uptime-kuma
 wallos
 zipline
