@@ -12,6 +12,7 @@ gate
 it-tools
 media
 memos
+morphos
 onedev
 paperless-ngx
 pdf
