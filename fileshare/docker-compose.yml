@@ -1,11 +1,11 @@
 services:
-    sailboat:
+    share:
         image: caddy:latest
         restart: unless-stopped
-        container_name: sailboat
+        container_name: share-server
 
         volumes:
-            - ./data/build:/app
+            - ./data:/files
             - ./Caddyfile:/etc/caddy/Caddyfile
 
         networks:
@@ -14,9 +14,9 @@ services:
         labels:
             diun.enable: true
             traefik.enable: true
-            traefik.http.routers.sailboat.rule: Host(`sailboat.domain.com`)
-            traefik.http.routers.sailboat.entrypoints: https
-            traefik.http.services.sailboat.loadbalancer.server.port: 80
+            traefik.http.routers.share.rule: Host(`share.domain.com`)
+            traefik.http.routers.share.entrypoints: https
+            traefik.http.services.share.loadbalancer.server.port: 80
 
 networks:
     traefik:

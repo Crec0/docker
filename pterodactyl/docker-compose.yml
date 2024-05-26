@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
     database:
@@ -25,7 +23,7 @@ services:
 
     panel:
         container_name: panel
-        image: ghcr.io/pterodactyl/panel:latest
+        image: ghcr.io/blueprintframework/blueprint:v1.11.6
         restart: always
         env_file: .env
 
@@ -45,6 +43,7 @@ services:
         volumes:
             - ./data/var/:/app/var/
             - ./data/logs/:/app/storage/logs
+            - ./data/extensions/:/blueprint_extensions
 
         healthcheck:    
             test: [ "CMD", "curl", "-f", "localhost:80" ]
