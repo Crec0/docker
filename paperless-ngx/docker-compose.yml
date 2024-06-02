@@ -1,4 +1,4 @@
-version: '3'
+
 services:
     paperless-redis:
         image: docker.io/library/redis:7
