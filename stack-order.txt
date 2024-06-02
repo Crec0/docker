@@ -4,11 +4,13 @@ authelia
 minio
 code-server
 dashboard
-dozzle
 diun
+dockge
+dozzle
+fileshare
+gate
 gossip
 grafana
-gate 
 it-tools
 media
 memos
@@ -16,7 +18,6 @@ morphos
 onedev
 paperless-ngx
 pdf
-portainer
 pterodactyl
 sailboat
 uptime-kuma

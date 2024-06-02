@@ -1,0 +1,31 @@
+
+services:
+    dockge:
+        image: louislam/dockge:1
+        container_name: dockge
+        restart: unless-stopped
+
+        env_file:
+            - .env
+
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /home/zero/docker:/home/zero/docker
+
+        networks:
+            - dockge
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.dockge.rule: Host(`dockge.domain.com`)
+            traefik.http.routers.dockge.entrypoints: https
+            traefik.http.routers.dockge.middlewares: authelia@docker
+            traefik.http.services.dockge.loadbalancer.server.port: 5001
+
+networks:
+    dockge:
+        name: dockge
+    traefik:
+        external: true
