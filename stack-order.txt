@@ -3,6 +3,7 @@ traefik
 authelia
 minio
 code-server
+convertx
 dashboard
 diun
 dockge
@@ -12,9 +13,9 @@ gate
 gossip
 grafana
 it-tools
+kustos
 media
 memos
-morphos
 onedev
 paperless-ngx
 pdf
