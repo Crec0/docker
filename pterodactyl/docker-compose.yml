@@ -23,7 +23,7 @@ services:
 
     panel:
         container_name: panel
-        image: ghcr.io/blueprintframework/blueprint:v1.11.6
+        image: ghcr.io/pterodactyl/panel:latest
         restart: always
         env_file: .env
 

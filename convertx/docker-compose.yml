@@ -1,0 +1,23 @@
+
+services:
+    convertx: 
+        image: ghcr.io/c4illin/convertx:latest
+        container_name: convertx
+        restart: unless-stopped
+
+        volumes:
+            - ./data/:/app/data
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.morphos.rule: Host(`convertx.domain.com`)
+            traefik.http.routers.morphos.entrypoints: https
+            traefik.http.services.morphos.loadbalancer.server.port: 3000
+
+networks:
+    traefik:
+        external: true
