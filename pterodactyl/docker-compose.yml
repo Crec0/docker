@@ -7,7 +7,9 @@ services:
         command: --default-authentication-plugin=mysql_native_password
         env_file: .env
         networks:
-            - panel 
+            - panel
+            - bytebase
+
         volumes:
             - ./data/database:/var/lib/mysql
 
@@ -101,6 +103,8 @@ networks:
     wings:
         name: wings
     minio:
+        external: true
+    bytebase:
         external: true
     traefik:
         external: true

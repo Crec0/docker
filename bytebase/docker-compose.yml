@@ -14,9 +14,6 @@ services:
         networks:
             - traefik
             - bytebase
-            - panel
-            - zipline
-            - kustos
 
         labels:
             diun.enable: true
@@ -31,9 +28,4 @@ networks:
         name: bytebase
     traefik:
         external: true
-    panel:
-        external: true
-    zipline:
-        external: true
-    kustos:
-        external: true
+

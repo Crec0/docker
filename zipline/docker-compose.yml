@@ -13,6 +13,7 @@ services:
 
         networks:
             - zipline
+            - bytebase
 
         healthcheck:
             test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
@@ -51,6 +52,8 @@ services:
 networks:
     zipline:
         name: zipline
+    bytebase:
+        external: true
     minio:
         external: true
     traefik:

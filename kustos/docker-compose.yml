@@ -13,6 +13,7 @@ services:
 
         networks:
             - kustos
+            - bytebase
 
         volumes:
             - ./data/postgres:/var/lib/postgresql/data
@@ -25,6 +26,8 @@ services:
 
 networks:
     traefik:
+        external: true
+    bytebase:
         external: true
     kustos:
         name: kustos
