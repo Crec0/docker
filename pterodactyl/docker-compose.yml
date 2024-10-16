@@ -63,13 +63,14 @@ services:
 
     wings:
         container_name: wings
-        image: ghcr.io/pterodactyl/wings:latest
+        image: ghcr.io/pterodactyl/wings:develop
         restart: unless-stopped
         command: wings
 
         networks:
             - wings
             - traefik
+            - minio
 
         expose:
             - 443
