@@ -21,7 +21,7 @@ services:
 
         healthcheck:
             interval: 5s
-            timeout: 5s
+            timeout: 60s
             start_period: 10s
             retries: 1
             test: [ "CMD", "/gluetun-entrypoint", "healthcheck" ]

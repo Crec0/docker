@@ -1,4 +1,5 @@
 import os
+import sys
 from collections import defaultdict
 
 pairs_dict = defaultdict(list)
@@ -12,6 +13,9 @@ def sizeof_fmt(num, suffix="B"):
     return f"{num:.1f}Yi{suffix}"
 
 def main():
+    
+    yeet = 'yeet' in sys.argv
+    
     # Walk the media folder and store all files in a dict of inode and list of file paths that share that inode
     for root, dirs, files in os.walk("/mnt/tank/media/"):
         for file in files:
@@ -32,10 +36,11 @@ def main():
             continue
 
         size_of_junk += os.stat(file_path).st_size
-        print(f'Deleting: {file_path}')
+        print(f'Deleting: {file_path} {sizeof_fmt(size_of_junk)}')
 
         # Commented for safety. I am lazy to do better.
-        # os.unlink(file_path)
+        if yeet:
+            os.unlink(file_path)
     
     print('Size cleared:', sizeof_fmt(size_of_junk))
 
