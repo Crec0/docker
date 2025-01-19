@@ -45,11 +45,5 @@ tee -a .git/config << EOF
     clean = sops encrypt
     required
 
-[diff "deobfuscated-diff"]
-    textconv = sed s/domain.com/DOMAIN_NAME_HERE/g
-
-[diff "decrypted-diff"]
-    textconv = sops decrypt
-
 EOF
 ```
