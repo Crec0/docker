@@ -36,13 +36,13 @@ You can run this from root directory
 ```bash
 tee -a .git/config << EOF
 [filter "obfuscate-domain"]
-    smudge = sed s/domain.com/DOMAIN_NAME_HERE/g
-    clean = sed s/DOMAIN_NAME_HERE/domain.com/g
+    smudge = sed s/domain.com/YOUR_DOMAIN/g %f
+    clean = sed s/YOUR_DOMAIN/domain.com/g %f
     required
 
 [filter "encrypt-decrypt"]
-    smudge = sops decrypt
-    clean = sops encrypt
+    smudge = sops decrypt %f
+    clean = sops encrypt %f
     required
 
 EOF
