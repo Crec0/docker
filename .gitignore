@@ -1,8 +1,9 @@
 **/data/
 **/logs/
-**/.env
-**/config.*
 git-sources/
 .task/
 server-state.txt
 regctl
+.vscode/
+sandworm/
+bluemap*

@@ -1,0 +1,56 @@
+
+services:
+    umami-db:
+        container_name: umami-db
+        image: postgres:15-alpine
+        restart: always
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data/postgres:/var/lib/postgresql/data
+
+        networks:
+            - umami
+    
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    umami:
+        container_name: umami
+        image: ghcr.io/umami-software/umami:postgresql-latest
+        restart: always
+
+        env_file:
+            - .env
+
+        depends_on:
+            umami-db:
+                condition: service_healthy
+
+        healthcheck:
+            test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+        networks:
+            - traefik
+            - umami
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.umami.rule: Host(`umami.domain.com`)
+            traefik.http.routers.umami.entrypoints: https
+            traefik.http.services.umami.loadbalancer.server.port: 3000
+
+networks:
+    umami:
+        name: umami
+    traefik:
+        external: true

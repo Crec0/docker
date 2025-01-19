@@ -2,8 +2,7 @@ wireguard-client
 traefik
 authelia
 minio
-code-server
-convertx
+beszel
 dashboard
 diun
 dockge
@@ -21,6 +20,7 @@ paperless-ngx
 pdf
 pterodactyl
 sailboat
+umami
 uptime-kuma
 wallos
 zipline

@@ -176,22 +176,16 @@ services:
     jellyfin:
         image: ghcr.io/hotio/jellyfin:latest
         container_name: jellyfin
-        group_add:
-            - "105"
 
         volumes:
             - ./data/jellyfin:/config
             - /mnt/tank/media/links:/media
-            # Devices
-            - /dev/dri/card0:/dev/dri/card0
-            - /dev/dri/renderD128:/dev/dri/renderD128
 
         networks:
             - traefik
         
         env_file:
             - .env
-        
 
         labels:
             diun.enable: true

@@ -15,5 +15,41 @@ flowchart LR
     B --> C(Wireguard)
     C -->|Home| D(Wireguard)
     D --> E(Traefik)
-    E --> F[Things]
+    E --> F[Thing 1]
+    E --> G[Thing 2]
+    E --> H[Thing 3]
+```
+
+### Encryption and Obfuscation
+
+You may have noticed all my config files and .envs are in this repo. I utilize [sops](https://github.com/getsops/sops) with [age](https://github.com/FiloSottile/age) to encrypt them.
+
+Domain I use to host my stuff on is also obfuscated in compose files as well.
+
+`.gitattributes` has the rules on how encryption, decryption and domain obfuscation works
+
+### .gitattributes
+
+Append this at the end of .git/config with DOMAINHERE being your domain to replace, for stuff.
+You can run this from root directory
+
+```bash
+tee -a .git/config << EOF
+[filter "obfuscate-domain"]
+    smudge = sed s/domain.com/DOMAIN_NAME_HERE/g
+    clean = sed s/DOMAIN_NAME_HERE/domain.com/g
+    required
+
+[filter "encrypt-decrypt"]
+    smudge = sops decrypt
+    clean = sops encrypt
+    required
+
+[diff "deobfuscated-diff"]
+    textconv = sed s/domain.com/DOMAIN_NAME_HERE/g
+
+[diff "decrypted-diff"]
+    textconv = sops decrypt
+
+EOF
 ```

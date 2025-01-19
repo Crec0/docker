@@ -8,7 +8,7 @@ pairs_dict = defaultdict(list)
 def sizeof_fmt(num, suffix="B"):
     for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
         if abs(num) < 1024.0:
-            return f"{num:3.1f} {unit}{suffix}"
+            return f"{num:>6.1f} {unit:>2}{suffix:<2}"
         num /= 1024.0
     return f"{num:.1f}Yi{suffix}"
 
@@ -34,11 +34,11 @@ def main():
         # Dont delete metadata, such as posters and stuff
         if file_path.startswith('/mnt/tank/media/links/'):
             continue
+        
+        s = os.stat(file_path).st_size
+        size_of_junk += s 
+        print(f'Deleting: {sizeof_fmt(s)} {file_path}')
 
-        size_of_junk += os.stat(file_path).st_size
-        print(f'Deleting: {file_path} {sizeof_fmt(size_of_junk)}')
-
-        # Commented for safety. I am lazy to do better.
         if yeet:
             os.unlink(file_path)
     

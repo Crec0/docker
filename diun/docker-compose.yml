@@ -1,5 +1,3 @@
-
-
 services:
     diun:
         image: crazymax/diun:latest
@@ -14,5 +12,13 @@ services:
         env_file:
             - .env
 
+        networks:
+            - diun
+
         labels:
             diun.enable: true
+
+
+networks:
+    diun:
+        name: diun

@@ -1,2 +1,5 @@
-docker-compose.yml  filter=yeet-domain
-sample.env          filter=yeet-domain
+docker-compose.yml  filter=obfuscate-domain
+sample.env          filter=obfuscate-domain
+config.yml          filter=encrypt-decrypt
+config.toml         filter=encrypt-decrypt
+.env                filter=encrypt-decrypt
