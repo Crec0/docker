@@ -37,3 +37,9 @@ Otherwise you get weird spooky permission issues
 ### Taskfile
 
 taskfile.dev
+
+
+### Sops/Age encryption
+
+- `age-keygen -o .config/sops/age/keys.txt`
+- it will spit out recepient id. use it in your local .sops.yaml for it to work seamlessly.
