@@ -54,7 +54,6 @@ tasks:
               task: update-stack
               vars:
                   STACK: "{{.ITEM}}"
-                  DIRECTION: up -d
 
 
     toggle-stack:
@@ -66,15 +65,20 @@ tasks:
             - cmd: docker compose {{.DIRECTION}}
               ignore_error: true
 
+
+    update-stack:
+        internal: true
+        prefix: "{{.STACK}}"
+
+        dir: "{{.STACK}}"
+        cmd: docker compose pull && docker compose up -d
+
+
     validate-auth:
         cmd: docker exec -it authelia authelia validate-config -c /config/configuration.yml
 
     generate-secret:
         cmd: docker exec -it authelia authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986
-
-    update-stack:
-        dir: "{{.USER_WORKING_DIR}}"
-        cmd: docker compose pull && docker compose up -d
 
     panel-save-shutdown:
         vars:
