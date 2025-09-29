@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
 output: prefixed
@@ -54,6 +54,14 @@ tasks:
               task: update-stack
               vars:
                   STACK: "{{.ITEM}}"
+
+    restart:
+        dir: "{{.USER_WORKING_DIR}}"
+        cmd: docker compose down && docker compose up -d
+
+    pestart:
+        dir: "{{.USER_WORKING_DIR}}"
+        cmd: docker compose down && docker compose pull && docker compose up -d
 
 
     toggle-stack:

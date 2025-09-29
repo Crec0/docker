@@ -5,7 +5,8 @@ services:
         image: minio/minio:latest
         container_name: minio
         restart: unless-stopped
-        command: server /data-1 /data-2 --console-address ":10101"
+        command: server /data-1 /data-2
+
         user: "1000:1000"
         
         env_file:
@@ -19,13 +20,8 @@ services:
             - traefik
             - minio
 
-        expose:
-            - 9000
-            - 10101
-
         ports:
             - 0.0.0.0:9000:9000
-
 
         labels:
             diun.enable: true
@@ -35,10 +31,27 @@ services:
             traefik.http.routers.s3.entrypoints: https
             traefik.http.services.s3.loadbalancer.server.port: 9000
 
-            traefik.http.routers.minio.service: minio
-            traefik.http.routers.minio.rule: Host(`minio.domain.com`)
-            traefik.http.routers.minio.entrypoints: https
-            traefik.http.services.minio.loadbalancer.server.port: 10101
+    minio-console:
+        image: ghcr.io/georgmangold/console:latest
+        container_name: minio-console
+        restart: unless-stopped
+
+        user: "1000:1000"
+        
+        env_file:
+            - .env
+
+        networks:
+            - traefik
+            - minio
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.minio-console.service: minio-console
+            traefik.http.routers.minio-console.rule: Host(`minio.domain.com`)
+            traefik.http.routers.minio-console.entrypoints: https
+            traefik.http.services.minio-console.loadbalancer.server.port: 9090
 
 networks:
     minio:

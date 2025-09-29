@@ -13,6 +13,9 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./data/images:/app/public/images
             - ./data/configs:/app/config
+        
+        environment:
+            - HOMEPAGE_ALLOWED_HOSTS=dash.domain.com
 
         networks:
             - traefik
