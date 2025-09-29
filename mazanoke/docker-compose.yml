@@ -1,0 +1,20 @@
+
+services:
+    mazanoke:
+        image: ghcr.io/civilblur/mazanoke:latest
+        container_name: mazanoke
+        restart: unless-stopped
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.mazanoke.rule: Host(`images.domain.com`)
+            traefik.http.routers.mazanoke.entrypoints: https
+            traefik.http.services.mazanoke.loadbalancer.server.port: 80
+
+networks:
+    traefik:
+        external: true

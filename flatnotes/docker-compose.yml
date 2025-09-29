@@ -1,0 +1,28 @@
+
+services:
+    flatnotes:
+        image: dullage/flatnotes:latest
+        container_name: flatnotes
+        restart: unless-stopped
+
+        user: 1000:1000
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data:/data
+
+        networks:
+            - traefik
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.flatnotes.rule: Host(`flatnotes.domain.com`)
+            traefik.http.routers.flatnotes.entrypoints: https
+            traefik.http.services.flatnotes.loadbalancer.server.port: 8080
+
+networks:
+    traefik:
+        external: true

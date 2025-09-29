@@ -1,0 +1,29 @@
+
+services:
+    pocket-id:
+        image: ghcr.io/stonith404/pocket-id:v0.24.0
+        container_name: pocket-id
+        restart: unless-stopped
+
+        env_file:
+            - .env
+
+        networks:
+            - traefik
+            - pocket-id
+
+        volumes:
+          - ./data/pocket-id:/app/backend/data
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.pocket-id.rule: Host(`pocket-id.domain.com`)
+            traefik.http.routers.pocket-id.entrypoints: https
+            traefik.http.services.pocket-id.loadbalancer.server.port: 3080
+
+networks:
+    pocket-id:
+        name: pocket-id
+    traefik:
+        external: true

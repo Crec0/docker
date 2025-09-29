@@ -1,0 +1,31 @@
+
+services:
+    dumbdo:
+        build: ../git-sources/DumbDo
+        container_name: dumbdo
+        restart: unless-stopped
+
+        user: 1000:1000
+
+        env_file:
+            - .env
+
+        volumes:
+            - ./data:/app/data
+
+        networks:
+            - traefik
+            - dumbdo
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.dumbdo.rule: Host(`dumbdo.domain.com`)
+            traefik.http.routers.dumbdo.entrypoints: https
+            traefik.http.services.dumbdo.loadbalancer.server.port: 3000
+
+networks:
+    dumbdo:
+        name: dumbdo
+    traefik:
+        external: true

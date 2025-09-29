@@ -59,6 +59,19 @@ services:
             traefik.http.routers.prowlarr.middlewares: authelia@docker
             traefik.http.services.prowlarr.loadbalancer.server.port: 9696
 
+            traefik.http.routers.profilarr.entrypoints: https
+            traefik.http.routers.profilarr.rule: Host(`profilarr.domain.com`)
+            traefik.http.routers.profilarr.service: profilarr
+            traefik.http.routers.profilarr.middlewares: authelia@docker
+            traefik.http.services.profilarr.loadbalancer.server.port: 6868
+
+            traefik.http.routers.huntarr.entrypoints: https
+            traefik.http.routers.huntarr.rule: Host(`huntarr.domain.com`)
+            traefik.http.routers.huntarr.service: huntarr
+            traefik.http.routers.huntarr.middlewares: authelia@docker
+            traefik.http.services.huntarr.loadbalancer.server.port: 9705
+
+
     flaresolverr:
         image: ghcr.io/flaresolverr/flaresolverr:latest
         container_name: flaresolverr
@@ -214,7 +227,55 @@ services:
             traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.domain.com`)
             traefik.http.services.jellyseerr.loadbalancer.server.port: 5055
 
+    huntarr:
+        image: ghcr.io/plexguide/huntarr:latest
+        container_name: huntarr
+        restart: always
 
+        network_mode: service:gluetun
+
+        depends_on: 
+            - radarr
+            - sonarr
+
+        volumes:
+            - ./data/huntarr:/config
+
+        environment:
+            - TZ=America/New_York
+    
+    profilarr:
+        image: santiagosayshey/profilarr:latest 
+        container_name: profilarr
+
+        network_mode: service:gluetun
+
+        volumes:
+            - ./data/profilarr:/config 
+
+        env_file:
+            - .env
+
+        restart: unless-stopped
+
+
+
+    bitplay:
+        image: ghcr.io/aculix/bitplay:main
+        restart: unless-stopped
+        container_name: bitplay
+
+        volumes:
+            - ./data/bitplay:/app/config 
+
+        network_mode: service:gluetun
+
+        labels:
+            diun.enable: true
+            traefik.enable: true
+            traefik.http.routers.bitplay.entrypoints: https
+            traefik.http.routers.bitplay.rule: Host(`bitplay.domain.com`)
+            traefik.http.services.bitplay.loadbalancer.server.port: 3347
 networks:
     media:
         name: media

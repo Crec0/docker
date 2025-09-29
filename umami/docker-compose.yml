@@ -13,6 +13,7 @@ services:
 
         networks:
             - umami
+            - bytebase
     
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -52,5 +53,7 @@ services:
 networks:
     umami:
         name: umami
+    bytebase:
+        external: true
     traefik:
         external: true

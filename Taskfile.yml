@@ -46,6 +46,17 @@ tasks:
                   STACK: "{{.ITEM}}"
                   DIRECTION: up -d
 
+    update-all:
+        dir: ~/docker
+        cmds:
+            - for:
+                  var: STARTUP_ORDER
+              task: update-stack
+              vars:
+                  STACK: "{{.ITEM}}"
+                  DIRECTION: up -d
+
+
     toggle-stack:
         internal: true
         prefix: "{{.STACK}}"
